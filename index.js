@@ -30,6 +30,8 @@ app.post('/register',(req,res)=> {
     console.log(req.body);
     const user = new User(req.body);
 
+    //Before save user data, encrypt password
+    
     user.save((err,userInfo)=> {
         if(err) return res.json({success:false, err});
         return res.status(200).json({success:true});
