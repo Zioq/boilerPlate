@@ -4,7 +4,9 @@ const port = 5000;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookeParser = require("cookie-parser");
+const {auth} = require("./middleware/auth");
 const { User } = require("./models/User");
+
 
 
 const config = require("./config/key");
@@ -31,7 +33,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.post("/register", (req, res) => {
+app.post("/api/users/register", (req, res) => {
   console.log(req.body);
   const user = new User(req.body);
 
@@ -43,7 +45,7 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.post("/login", (req, res) => {
+app.post("/api/users/login", (req, res) => {
   //Find email or username in DB
   User.findOne({ email: req.body.email }, (err, user) => {
     if (!user) {
@@ -52,6 +54,7 @@ app.post("/login", (req, res) => {
         message: "Failed to find user",
       });
     }
+    console.log(user);
     //If email is exists, check password too
     user.comparePassword(req.body.password,(err, isMatch) => {
         if (!isMatch) {
@@ -68,6 +71,22 @@ app.post("/login", (req, res) => {
                    userId: user._id});
         });
       });
+  });
+});
+
+// Verify Authentication
+app.get('/api/users/auth', auth ,(req,res) => {
+
+  //If process is pass middleware(auth), authentication come to true.
+  res.status(200).json({
+    _id:req.user._id,
+    isAdmin:req.user.role == 0 ? false : true,
+    isAuth:true,
+    email:req.user.eamil,
+    name:req.user.name,
+    lastname:req.user.lastname,
+    role:req.user.role,
+    image:req.user.image
   });
 });
 
