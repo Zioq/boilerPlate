@@ -7,7 +7,7 @@ let auth = (req,res,next)=> {
     let token = req.cookies.x_auth;
 
     // Decode Token and find user
-    User.findByToken(token,(user,err) =>{
+    User.findByToken(token,(err,user) =>{
         if(err) throw err;
         // or failed certification.
         if(!user) 

@@ -54,7 +54,7 @@ app.post("/api/users/login", (req, res) => {
         message: "Failed to find user",
       });
     }
-    console.log(user);
+    //onsole.log(user);
     //If email is exists, check password too
     user.comparePassword(req.body.password,(err, isMatch) => {
         if (!isMatch) {
@@ -90,6 +90,18 @@ app.get('/api/users/auth', auth ,(req,res) => {
   });
 });
 
+//Logout
+app.get('/api/users/logout', auth, (req, res) => {
+   console.log('req.user', req.user);
+  User.findOneAndUpdate({ _id: req.user._id },
+    { token: "" }
+    , (err, user) => {
+      if (err) return res.json({ success: false, err });
+      return res.status(200).send({
+        success: true
+      })
+    })
+})
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

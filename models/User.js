@@ -62,8 +62,17 @@ userSchema.methods.comparePassword = function(plainPassword, cb) {
 userSchema.methods.generateToken = function(cb) {
 
     var user = this;
+
     //Generate token by jsonwebtoken
     var token = jwt.sign(user._id.toHexString(), 'secretToken');
+
+    /* 
+    [encode]
+    user_.id + 'secretToken' -> token
+    [decode]
+    token + 'secretToken' -> user._id 
+     */
+
     user.token = token;
     user.save(function(err,user) {
         if(err) return cb(err);
@@ -72,7 +81,7 @@ userSchema.methods.generateToken = function(cb) {
 };
 
 //User find by token method
-userSchema.methods.findByToken = function (token, cb) {
+userSchema.statics.findByToken = function (token, cb) {
     var user = this;
 
     //Decode Token
